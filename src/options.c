@@ -241,6 +241,40 @@ int opt_set_ip6_v6only(lua_State *L, p_socket ps)
     return opt_setboolean(L, ps, IPPROTO_IPV6, IPV6_V6ONLY);
 }
 
+#ifdef __linux__
+
+int opt_set_bindtodevice(lua_State *L, p_socket ps)
+{
+    size_t len;
+    const char *dev_name = luaL_optlstring(L, -1, "", &len);
+    return opt_set(L, ps, SOL_SOCKET, SO_BINDTODEVICE, dev_name, len);
+}
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,8,0)
+int opt_get_bindtodevice(lua_State *L, p_socket ps)
+{
+    char dev_name[IFNAMSZ];
+    int len = IFNAMSZ;
+    int rc = opt_get(L, ps, SOL_SOCKET, SO_BINDTODEVICE, dev_name, &len);
+    if ( rc == 0 ) {
+        lua_pushlstring(L, dev_name, len);
+        return 1;
+    }
+    
+    return rc;
+}
+#endif
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,25)
+int opt_set_mark(lua_State *L, p_socket ps)
+{
+    const char *mark = luaL_checkstring(L, -1);
+    return opt_set(L, ps, SOL_SOCKET, SO_MARK, (void*)mark, strlen(mark));
+}
+#endif
+
+#endif      /* __linux__ */
+
 /*=========================================================================*\
 * Auxiliar functions
 \*=========================================================================*/

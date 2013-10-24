@@ -4,6 +4,9 @@
 \*=========================================================================*/
 #include <string.h>
 #include <stdlib.h>
+#ifdef __linux__
+#include <linux/version.h>
+#endif
 
 #include "lua.h"
 #include "lauxlib.h"
@@ -84,6 +87,12 @@ static t_opt optset[] = {
     {"ipv6-add-membership",  opt_set_ip6_add_membership},
     {"ipv6-drop-membership", opt_set_ip6_drop_membersip},
     {"ipv6-v6only",          opt_set_ip6_v6only},
+#ifdef __linux__
+    {"bindtodevice",         opt_set_bindtodevice},
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,25)
+    {"mark",                 opt_set_mark},
+#endif
+#endif
     {NULL,                   NULL}
 };
 
@@ -96,6 +105,11 @@ static t_opt optget[] = {
     {"ipv6-multicast-hops",  opt_get_ip6_unicast_hops},
     {"ipv6-multicast-loop",  opt_get_ip6_multicast_loop},
     {"ipv6-v6only",          opt_get_ip6_v6only},
+#ifdef __linux__
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,8,0)
+    {"bindtodevice",         opt_get_bindtodevice},
+#endif
+#endif
     {NULL,                   NULL}
 };
 

@@ -3,6 +3,9 @@
 * LuaSocket toolkit
 \*=========================================================================*/
 #include <string.h>
+#ifdef __linux__
+#include <linux/version.h>
+#endif
 
 #include "lua.h"
 #include "lauxlib.h"
@@ -74,6 +77,11 @@ static t_opt optget[] = {
     {"tcp-nodelay", opt_get_tcp_nodelay},
     {"linger",      opt_get_linger},
     {"error",       opt_get_error},
+#ifdef __linux__
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,8,0)
+    {"bindtodevice",opt_get_bindtodevice},
+#endif
+#endif
     {NULL,          NULL}
 };
 
@@ -83,6 +91,12 @@ static t_opt optset[] = {
     {"tcp-nodelay", opt_set_tcp_nodelay},
     {"ipv6-v6only", opt_set_ip6_v6only},
     {"linger",      opt_set_linger},
+#ifdef __linux__
+    {"bindtodevice",opt_set_bindtodevice},
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,25)
+    {"mark",        opt_set_mark},
+#endif
+#endif
     {NULL,          NULL}
 };
 

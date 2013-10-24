@@ -3,6 +3,9 @@
 * LuaSocket toolkit
 \*=========================================================================*/
 #include <string.h> 
+#ifdef __linux__
+#include <linux/version.h>
+#endif
 
 #include "lua.h"
 #include "lauxlib.h"
@@ -65,6 +68,11 @@ static t_opt optset[] = {
     {"keepalive",   opt_set_keepalive},
     {"reuseaddr",   opt_set_reuseaddr},
     {"linger",      opt_set_linger},
+#ifdef __linux__
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,25)
+    {"mark",        opt_set_mark},
+#endif
+#endif
     {NULL,          NULL}
 };
 

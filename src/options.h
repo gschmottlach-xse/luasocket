@@ -7,6 +7,9 @@
 * This module provides a common interface to socket options, used mainly by
 * modules UDP and TCP. 
 \*=========================================================================*/
+#ifdef __linux__
+#include <linux/version.h>
+#endif
 
 #include "lua.h"
 #include "socket.h"
@@ -39,6 +42,13 @@ int opt_set_ip6_add_membership(lua_State *L, p_socket ps);
 int opt_set_ip6_drop_membersip(lua_State *L, p_socket ps);
 int opt_set_ip6_v6only(lua_State *L, p_socket ps);
 
+#ifdef __linux__
+int opt_set_bindtodevice(lua_State *L, p_socket ps);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,25)
+int opt_set_mark(lua_State *L, p_socket ps);
+#endif
+#endif
+
 /* supported options for getoption */
 int opt_get_reuseaddr(lua_State *L, p_socket ps);
 int opt_get_tcp_nodelay(lua_State *L, p_socket ps);
@@ -52,6 +62,12 @@ int opt_get_ip6_multicast_loop(lua_State *L, p_socket ps);
 int opt_get_ip6_multicast_hops(lua_State *L, p_socket ps);
 int opt_get_ip6_unicast_hops(lua_State *L, p_socket ps);
 int opt_get_ip6_v6only(lua_State *L, p_socket ps); 
+
+#ifdef __linux__
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,8,0)
+int opt_get_bindtodevice(lua_State *L, p_socket ps);
+#endif
+#endif
 
 /* invokes the appropriate option handler */
 int opt_meth_setoption(lua_State *L, p_opt opt, p_socket ps);
